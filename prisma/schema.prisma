@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Article {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  content   String
+  summary   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  quizzes Quiz[]
+
+  @@index([userId])
+}
+
+model Quiz {
+  id        String   @id @default(cuid())
+  articleId String
+  createdAt DateTime @default(now())
+
+  article   Article    @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  questions Question[]
+}
+
+model Question {
+  id            String   @id @default(cuid())
+  quizId        String
+  question      String
+  options       String[]
+  correctAnswer String
+  order         Int
+
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
